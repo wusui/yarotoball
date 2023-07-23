@@ -19,7 +19,7 @@ def extract_sb(raw_soup):
 def stats_with_sb(raw_stats):
     """
     Return stolen base info in away/home order.  Return one entry if only one
-    team stole any bases.  Called from get_game_stats
+    team stole any bases.  Called from cbs_get_game_stats
     """
     def fmt_sb(extracted_sb):
         def sb_list():

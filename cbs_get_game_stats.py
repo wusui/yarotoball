@@ -7,7 +7,31 @@ import requests
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 
-from get_sb_info import fmt_all_stats, stats_with_sb
+from cbs_get_sb_info import fmt_all_stats, stats_with_sb
+
+def cbs_get_box_urls(yyyymmdd):
+    """
+    Given date in yyyymmdd format, return a list of urls of mlb boxscores for that
+    date.
+    """
+    def get_url_for_date(date_str):
+        return requests.get('https://www.cbssports.com/mlb/scoreboard/' +
+                            f'{date_str}/', timeout=15)
+    def find_box(tag):
+        if tag.has_attr('href'):
+            if tag.get('href').startswith('/mlb/gametracker/boxscore/'):
+                return True
+        return False
+    def get_soup_on_date(yyyymmdd):
+        return bs(get_url_for_date(yyyymmdd).text, 'html.parser')
+    def get_games_on_day(yyyymmdd):
+        return get_soup_on_date(yyyymmdd).find_all(find_box)
+    def filter_asg(games):
+        if len(games) == 1 and 'NLA' in games[0]:
+            return []
+        return games
+    return filter_asg(list(map(lambda a: ''.join(['https://cbssports.com',
+                    a.get('href')]), get_games_on_day(yyyymmdd))))
 
 def get_game_data(page):
     """
@@ -158,7 +182,7 @@ def extract_game_stats(page):
         return list(map(mrg_stats, gg_si2(xtract_ids(kdata))))
     return dict(gg_stats_inner(reorg(xtract_game_stats(page))))
 
-def get_game_stats(url):
+def cbs_get_game_stats(url):
     """
     Tack game id in front of statistics.
     """
@@ -170,7 +194,7 @@ def get_game_stats(url):
     return [get_game_id(url.split('/')[-2:]), extract_game_stats(url)]
 
 if __name__ == "__main__":
-    print(get_game_stats(
+    print(cbs_get_game_stats(
         "https://www.cbssports.com/mlb/gametracker/boxscore" + \
                     "/MLB_20230718_SF@CIN_2/"
     ))
