@@ -68,6 +68,9 @@ def update_first_empty(website):
             if not override and os.path.exists(fname):
                 return False
             with open(fname, 'w', encoding='utf-8') as ofd:
+                if fname.startswith('br_stats'):
+                    ofd.write(json.dumps(get_day_stats(day_value)))
+                    return True
                 ofd.write(json.dumps(dict(get_day_stats(day_value))))
                 return True
         return upd_day(os.sep.join(
@@ -91,4 +94,4 @@ def update_first_empty(website):
     update_inner(count=1)
 
 if __name__ == "__main__":
-    update_first_empty('cbs')
+    update_first_empty('br')
