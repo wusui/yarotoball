@@ -90,8 +90,9 @@ def update_first_empty(website):
         return list(map(cleanup,
                     list(filter(fed_inner, list(map(fed_mkf, get_box_dates()))))))
     def update_inner(count=1):
-        list(map(update_day, find_empty_dates(website)[0:count]))
-    update_inner(count=1)
+        return list(map(update_day, find_empty_dates(website)[0:count]))
+    return update_inner(count=1)
 
 if __name__ == "__main__":
+    update_first_empty('cbs')
     update_first_empty('br')

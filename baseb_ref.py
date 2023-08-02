@@ -2,6 +2,8 @@
 """
 Baseball reference parser
 """
+import secrets
+import time
 import requests
 from bs4 import Comment, BeautifulSoup as bs
 
@@ -25,7 +27,6 @@ def add_cols(p_dict):
     """
     def add_col_inn(klist):
         def add_zero_flds(indv):
-            #import pdb; pdb.set_trace()
             if 'SB' not in list(p_dict[indv]['batting'].keys()):
                 return [reind(indv), {'name': p_dict[indv]['name'],
                                       'team': p_dict[indv]['team'],
@@ -89,7 +90,6 @@ def br_get_game_stats(page):
             def mk_dict(pinfo):
                 return dict(pinfo[0]) | dict(pinfo[1])
             return mk_dict(list(map(get_pls, [1, 2])))
-            #return merge_bp(handle_pitching(soup[0]))
         return [get_plists(get_teams(soup[1])), handle_pitching(soup[0])]
     def merge_bp(all_data):
         def mbp_inner(bat_data):
@@ -160,6 +160,7 @@ def br_parse_com(page):
             return bggs_tcom(list(filter(lambda a: '<table' in a, com)))
         return [bggs_uncom(soup(text=lambda text: isinstance(text, Comment))),
                 soup.find('title').text]
+    time.sleep(secrets.randbits(4))
     return bggs_inner(bs(requests.get(page, timeout=15).text, 'html.parser'))
 
 def br_parse_day(url):
@@ -172,6 +173,7 @@ def br_parse_day(url):
                 return True
         return False
     def make_soup():
+        time.sleep(secrets.randbits(4))
         return bs(requests.get(url, timeout=15).text,
                   'html.parser').find_all('a', href=True)
     return list(map(lambda a: 'https://www.baseball-reference.com' +
